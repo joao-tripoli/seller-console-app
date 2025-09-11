@@ -1,4 +1,4 @@
-import { DataTable } from '@/components/ui/data-table';
+import DataTable from '@/components/ui/data-table';
 import useQueryLeads from '@/hooks/queries/useQueryLeads';
 import { type ColumnDef } from '@tanstack/react-table';
 

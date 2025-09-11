@@ -14,15 +14,14 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-interface DataTableProps<TData, TValue> {
+type Props<TData, TValue> = {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-}
+};
 
-export function DataTable<TData, TValue>({
-  columns,
-  data,
-}: DataTableProps<TData, TValue>) {
+const DataTable = <TData, TValue>(props: Props<TData, TValue>) => {
+  const { columns, data } = props;
+
   const table = useReactTable({
     data,
     columns,
@@ -75,4 +74,6 @@ export function DataTable<TData, TValue>({
       </Table>
     </div>
   );
-}
+};
+
+export default DataTable;
