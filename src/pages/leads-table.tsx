@@ -6,7 +6,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import leads from '@/constants/leads.json';
+import useQueryLeads from '@/hooks/queries/useQueryLeads';
 import {
   flexRender,
   getCoreRowModel,
@@ -14,32 +14,32 @@ import {
   type ColumnDef,
 } from '@tanstack/react-table';
 
-const LeadsTable = () => {
-  const data = leads;
+const columns: ColumnDef<Lead>[] = [
+  {
+    accessorKey: 'name',
+    header: 'Name',
+    cell: ({ getValue }) => (
+      <div className="text-left">{getValue() as string}</div>
+    ),
+  },
+  {
+    accessorKey: 'email',
+    header: 'Email',
+    cell: ({ getValue }) => (
+      <div className="text-left">{getValue() as string}</div>
+    ),
+  },
+  {
+    accessorKey: 'company',
+    header: 'Company',
+    cell: ({ getValue }) => (
+      <div className="text-left">{getValue() as string}</div>
+    ),
+  },
+];
 
-  const columns: ColumnDef<Lead>[] = [
-    {
-      accessorKey: 'name',
-      header: 'Name',
-      cell: ({ getValue }) => (
-        <div className="text-left">{getValue() as string}</div>
-      ),
-    },
-    {
-      accessorKey: 'email',
-      header: 'Email',
-      cell: ({ getValue }) => (
-        <div className="text-left">{getValue() as string}</div>
-      ),
-    },
-    {
-      accessorKey: 'company',
-      header: 'Company',
-      cell: ({ getValue }) => (
-        <div className="text-left">{getValue() as string}</div>
-      ),
-    },
-  ];
+const LeadsTable = () => {
+  const { data } = useQueryLeads();
 
   const table = useReactTable({
     data,
