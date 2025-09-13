@@ -22,10 +22,11 @@ import { Button } from './button';
 type Props<TData, TValue> = {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  isLoading?: boolean;
 };
 
 const DataTable = <TData, TValue>(props: Props<TData, TValue>) => {
-  const { columns, data } = props;
+  const { columns, data, isLoading = false } = props;
 
   const [sorting, setSorting] = useState<SortingState>([]);
 
@@ -64,7 +65,18 @@ const DataTable = <TData, TValue>(props: Props<TData, TValue>) => {
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {isLoading ? (
+              // Loading state - show skeleton rows
+              Array.from({ length: 5 }).map((_, index) => (
+                <TableRow key={`loading-${index}`}>
+                  {columns.map((_, colIndex) => (
+                    <TableCell key={`loading-cell-${colIndex}`}>
+                      <div className="h-4 bg-gray-200 rounded animate-pulse" />
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
@@ -99,7 +111,7 @@ const DataTable = <TData, TValue>(props: Props<TData, TValue>) => {
           variant="outline"
           size="sm"
           onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
+          disabled={!table.getCanPreviousPage() || isLoading}
         >
           Previous
         </Button>
@@ -108,7 +120,7 @@ const DataTable = <TData, TValue>(props: Props<TData, TValue>) => {
           variant="outline"
           size="sm"
           onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
+          disabled={!table.getCanNextPage() || isLoading}
         >
           Next
         </Button>

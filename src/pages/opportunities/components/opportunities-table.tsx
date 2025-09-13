@@ -1,10 +1,10 @@
 import { Button } from '@/components/ui/button';
 import DataTable from '@/components/ui/data-table';
-import useQueryLeads from '@/hooks/queries/useQueryLeads';
+import useQueryOpportunities from '@/hooks/queries/useQueryOpportunities';
 import { type ColumnDef } from '@tanstack/react-table';
 import { ArrowUpDown } from 'lucide-react';
 
-const columns: ColumnDef<Lead>[] = [
+const columns: ColumnDef<Opportunity>[] = [
   {
     accessorKey: 'name',
     header: 'Name',
@@ -13,31 +13,36 @@ const columns: ColumnDef<Lead>[] = [
     ),
   },
   {
-    accessorKey: 'email',
-    header: 'Email',
+    accessorKey: 'accountName',
+    header: 'Account',
     cell: ({ getValue }) => (
       <div className="text-left">{getValue() as string}</div>
     ),
   },
   {
-    accessorKey: 'company',
-    header: 'Company',
+    accessorKey: 'stage',
+    header: 'Stage',
     cell: ({ getValue }) => (
       <div className="text-left">{getValue() as string}</div>
     ),
   },
   {
-    accessorKey: 'score',
-    cell: ({ getValue }) => (
-      <div className="text-left">{getValue() as string}</div>
-    ),
+    accessorKey: 'amount',
+    cell: ({ getValue }) => {
+      const amount = getValue() as number;
+      return (
+        <div className="text-left">
+          {amount ? `$${amount.toLocaleString()}` : 'N/A'}
+        </div>
+      );
+    },
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Score
+          Amount
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
@@ -45,10 +50,10 @@ const columns: ColumnDef<Lead>[] = [
   },
 ];
 
-const LeadsTable = () => {
-  const { data, isLoading } = useQueryLeads();
+const OpportunitiesTable = () => {
+  const { data, isLoading } = useQueryOpportunities();
 
   return <DataTable columns={columns} data={data} isLoading={isLoading} />;
 };
 
-export default LeadsTable;
+export default OpportunitiesTable;

@@ -108,6 +108,7 @@ const Leads = () => {
       />
 
       {/* <LeadsTable /> */}
+
       <LeadForm
         open={!!selectedLead}
         onClose={() => setSelectedLead(null)}
