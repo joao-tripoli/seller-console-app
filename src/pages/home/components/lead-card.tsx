@@ -3,23 +3,42 @@ import ScoreBadge from '@/components/ui/score-badge';
 
 type Props = {
   lead: Lead;
+  onLeadClick: (lead: Lead) => void;
 };
 
-const LeadCard = ({ lead }: Props) => {
+const LeadCard = ({ lead, onLeadClick }: Props) => {
   return (
-    <div className="w-full border border-gray-200 rounded-md p-4 relative">
-      <div className="flex items-center gap-2">{lead.name}</div>
+    <div
+      className="w-full border border-gray-200 rounded-md p-4 relative cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.01] hover:border-blue-200 hover:bg-blue-50/20 group"
+      onClick={() => onLeadClick(lead)}
+    >
+      <div className="flex items-center gap-2 group-hover:text-blue-600 transition-colors">
+        {lead.name}
+      </div>
 
       <ScoreBadge score={lead.score} className="absolute top-4 right-4" />
 
       <div className="flex flex-col items-start gap-0.5 mt-2">
-        <span className="text-xs text-gray-400">{lead.company}</span>
-        <span className="text-xs text-gray-400">{lead.email}</span>
-        <span className="text-xs text-gray-400">{lead.source}</span>
-        <span className="text-xs text-gray-400">{lead.status}</span>
+        <span className="text-xs text-gray-400 group-hover:text-gray-600 transition-colors">
+          {lead.company}
+        </span>
+        <span className="text-xs text-gray-400 group-hover:text-gray-600 transition-colors">
+          {lead.email}
+        </span>
+        <span className="text-xs text-gray-400 group-hover:text-gray-600 transition-colors">
+          {lead.source}
+        </span>
+        <span className="text-xs text-gray-400 group-hover:text-gray-600 transition-colors">
+          {lead.status}
+        </span>
       </div>
 
-      <Button className="absolute bottom-4 right-4 bg-blue-400 hover:bg-blue-500 h-8">
+      <Button
+        className="absolute bottom-4 right-4 bg-blue-400 hover:bg-blue-500 h-8 group-hover:bg-blue-500 transition-colors"
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
+      >
         Convert lead
       </Button>
     </div>

@@ -9,64 +9,35 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import useQueryLeads from '@/hooks/queries/useQueryLeads';
 import { Search, SortAsc, SortDesc, X } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import LeadForm from './components/lead-form';
 import LeadsList from './components/leads-list';
+import useLeads from './hooks/useLeads';
 
 const home = () => {
-  const [sort, setSort] = useState<'asc' | 'desc' | ''>('');
-  const [search, setSearch] = useState('');
-  const [status, setStatus] = useState('');
-
-  const { data: leads } = useQueryLeads();
-
-  const clearAllFilters = () => {
-    setSort('');
-    setSearch('');
-    setStatus('');
-  };
-
-  const hasActiveFilters = search !== '' || status !== '' || sort !== '';
-
-  const filteredLeads = useMemo(() => {
-    if (!leads) return [];
-
-    let filtered = leads;
-
-    // Filter by search term (name or company)
-    filtered = leads.filter((lead) => {
-      const searchTerm = search.toLowerCase();
-
-      return (
-        lead.name.toLowerCase().includes(searchTerm) ||
-        lead.company.toLowerCase().includes(searchTerm)
-      );
-    });
-
-    if (status && status !== '') {
-      filtered = filtered.filter((lead) => lead.status === status);
-    }
-
-    // Sort by score
-    return filtered.sort((a, b) => {
-      if (sort === '') {
-        return 0;
-      }
-
-      if (sort === 'asc') {
-        return a.score - b.score;
-      }
-      return b.score - a.score;
-    });
-  }, [leads, sort, search, status]);
+  const {
+    filteredLeads,
+    clearAllFilters,
+    hasActiveFilters,
+    status,
+    setStatus,
+    search,
+    setSearch,
+    sort,
+    setSort,
+    selectedLead,
+    setSelectedLead,
+  } = useLeads();
 
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-3xl text-left">Leads</h1>
 
+        <LeadForm open={!!selectedLead} onClose={() => setSelectedLead(null)} />
+
         <div className="flex items-center gap-2">
+          {/* Clear All Filters Button */}
           {hasActiveFilters && (
             <Button
               variant="ghost"
@@ -79,6 +50,7 @@ const home = () => {
             </Button>
           )}
 
+          {/* Status Select */}
           <Select value={status} onValueChange={setStatus}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Select a status" />
@@ -116,7 +88,7 @@ const home = () => {
         </div>
       </div>
 
-      <LeadsList leads={filteredLeads} />
+      <LeadsList leads={filteredLeads} onLeadClick={setSelectedLead} />
       {/* <LeadsTable /> */}
     </div>
   );
