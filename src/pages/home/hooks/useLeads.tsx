@@ -1,21 +1,64 @@
 import useQueryLeads from '@/hooks/queries/useQueryLeads';
+import useLocalStorage from '@/hooks/useLocalStorage';
 import { useCallback, useMemo, useState } from 'react';
 
+// Define the filter state type
+type FilterState = {
+  sort: 'asc' | 'desc' | '';
+  search: string;
+  status: string;
+};
+
+// localStorage key for filters
+const FILTERS_STORAGE_KEY = 'leads-filters';
+
 const useLeads = () => {
-  const [sort, setSort] = useState<'asc' | 'desc' | ''>('');
-  const [search, setSearch] = useState('');
-  const [status, setStatus] = useState('');
+  // Use localStorage for filter persistence
+  const [filters, setFilters] = useLocalStorage<FilterState>(
+    FILTERS_STORAGE_KEY,
+    {
+      sort: '',
+      search: '',
+      status: '',
+    }
+  );
+
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
 
   const { data: leads } = useQueryLeads();
 
-  const clearAllFilters = useCallback(() => {
-    setSort('');
-    setSearch('');
-    setStatus('');
-  }, []);
+  // Individual setters for each filter
+  const setSort = useCallback(
+    (sort: 'asc' | 'desc' | '') => {
+      setFilters((prev) => ({ ...prev, sort }));
+    },
+    [setFilters]
+  );
 
-  const hasActiveFilters = search !== '' || status !== '' || sort !== '';
+  const setSearch = useCallback(
+    (search: string) => {
+      setFilters((prev) => ({ ...prev, search }));
+    },
+    [setFilters]
+  );
+
+  const setStatus = useCallback(
+    (status: string) => {
+      setFilters((prev) => ({ ...prev, status }));
+    },
+    [setFilters]
+  );
+
+  const clearAllFilters = useCallback(() => {
+    setFilters({
+      sort: '',
+      search: '',
+      status: '',
+    });
+  }, [setFilters]);
+
+  const hasActiveFilters =
+    filters.search !== '' || filters.status !== '' || filters.sort !== '';
 
   const filteredLeads = useMemo(() => {
     if (!leads) return [];
@@ -24,7 +67,7 @@ const useLeads = () => {
 
     // Filter by search term (name or company)
     filtered = leads.filter((lead) => {
-      const searchTerm = search.toLowerCase();
+      const searchTerm = filters.search.toLowerCase();
 
       return (
         lead.name.toLowerCase().includes(searchTerm) ||
@@ -32,32 +75,32 @@ const useLeads = () => {
       );
     });
 
-    if (status && status !== '') {
-      filtered = filtered.filter((lead) => lead.status === status);
+    if (filters.status && filters.status !== '') {
+      filtered = filtered.filter((lead) => lead.status === filters.status);
     }
 
     // Sort by score
     return filtered.sort((a, b) => {
-      if (sort === '') {
+      if (filters.sort === '') {
         return 0;
       }
 
-      if (sort === 'asc') {
+      if (filters.sort === 'asc') {
         return a.score - b.score;
       }
       return b.score - a.score;
     });
-  }, [leads, sort, search, status]);
+  }, [leads, filters.sort, filters.search, filters.status]);
 
   return {
     filteredLeads,
     clearAllFilters,
     hasActiveFilters,
-    status,
+    status: filters.status,
     setStatus,
-    search,
+    search: filters.search,
     setSearch,
-    sort,
+    sort: filters.sort,
     setSort,
     selectedLead,
     setSelectedLead,
