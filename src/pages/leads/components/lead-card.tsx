@@ -5,9 +5,10 @@ import ScoreBadge from '@/components/ui/score-badge';
 type Props = {
   lead: Lead;
   onLeadClick: (lead: Lead) => void;
+  onConvertLead: (lead: Lead) => void;
 };
 
-const LeadCard = ({ lead, onLeadClick }: Props) => {
+const LeadCard = ({ lead, onLeadClick, onConvertLead }: Props) => {
   return (
     <div
       className="w-full border border-gray-200 rounded-md p-4 relative cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.01] hover:border-blue-200 hover:bg-blue-50/20 group"
@@ -36,6 +37,7 @@ const LeadCard = ({ lead, onLeadClick }: Props) => {
         className="absolute bottom-4 right-4 bg-blue-400 hover:bg-blue-500 h-8 group-hover:bg-blue-500 transition-colors"
         onClick={(e) => {
           e.stopPropagation();
+          onConvertLead(lead);
         }}
       >
         Convert lead

@@ -25,6 +25,7 @@ const useLeads = () => {
   );
 
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
+  const [leadToConvert, setLeadToConvert] = useState<Lead | null>(null);
 
   const { data: leads } = useQueryLeads();
 
@@ -96,6 +97,14 @@ const useLeads = () => {
     });
   }, [leads, filters.sort, debouncedSearch, filters.status]);
 
+  const handleConvertLead = useCallback((lead: Lead) => {
+    setLeadToConvert(lead);
+  }, []);
+
+  const handleCloseConvertForm = useCallback(() => {
+    setLeadToConvert(null);
+  }, []);
+
   return {
     filteredLeads,
     clearAllFilters,
@@ -108,6 +117,9 @@ const useLeads = () => {
     setSort,
     selectedLead,
     setSelectedLead,
+    leadToConvert,
+    handleConvertLead,
+    handleCloseConvertForm,
   };
 };
 

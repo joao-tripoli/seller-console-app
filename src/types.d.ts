@@ -7,3 +7,11 @@ declare type Lead = {
   score: number;
   status: 'active' | 'pending' | 'inactive';
 };
+
+declare type Opportunity = {
+  id: number;
+  name: string;
+  stage: string;
+  amount?: number;
+  accountName: string;
+};

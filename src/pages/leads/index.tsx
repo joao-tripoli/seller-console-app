@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { Search, SortAsc, SortDesc, X } from 'lucide-react';
+import ConvertLeadForm from './components/convert-lead-form';
 import LeadForm from './components/lead-form';
 import LeadsList from './components/leads-list';
 import useLeads from './hooks/useLeads';
@@ -28,6 +29,9 @@ const Leads = () => {
     setSort,
     selectedLead,
     setSelectedLead,
+    leadToConvert,
+    handleConvertLead,
+    handleCloseConvertForm,
   } = useLeads();
 
   return (
@@ -97,13 +101,23 @@ const Leads = () => {
         </div>
       </div>
 
-      <LeadsList leads={filteredLeads} onLeadClick={setSelectedLead} />
+      <LeadsList
+        leads={filteredLeads}
+        onLeadClick={setSelectedLead}
+        onConvertLead={handleConvertLead}
+      />
 
       {/* <LeadsTable /> */}
       <LeadForm
         open={!!selectedLead}
         onClose={() => setSelectedLead(null)}
         lead={selectedLead}
+      />
+
+      <ConvertLeadForm
+        open={!!leadToConvert}
+        onClose={handleCloseConvertForm}
+        lead={leadToConvert}
       />
     </div>
   );
