@@ -1,69 +1,72 @@
-# React + TypeScript + Vite
+# Seller Console App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This project is a modern seller console application built with React and TypeScript for managing leads and opportunities.
 
-Currently, two official plugins are available:
+## ✨ Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Leads Management**: View, filter, and manage sales leads with comprehensive data
+- **Opportunities Tracking**: Monitor and track sales opportunities through the pipeline
+- **Advanced Filtering**: Filter leads by status, search by name or company, and sort by score
+- **Responsive Design**: Optimized for both desktop and mobile devices with adaptive layouts
+- **Lead Conversion**: Convert leads to opportunities with detailed forms
+- **Real-time Updates**: Powered by TanStack Query for efficient data management
 
-## Expanding the ESLint configuration
+## 🚀 Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+**Frontend:** React 19, Vite, TypeScript, Tailwind CSS.  
+**UI Components:** Radix UI, shadcn/ui, Lucide React icons.  
+**State Management:** TanStack Query, React Hook Form.  
+**Routing:** TanStack Router.  
+**Other Libraries:** Zod for validation, Sonner for notifications.
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 📦 Getting Started
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+Clone the project and install dependencies:
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+git clone https://github.com/your-username/seller-console-app.git
+cd seller-console-app
+pnpm i
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Start the development server:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+pnpm dev
 ```
+
+## 📁 Folder Structure
+
+```
+src/
+├── components/     # Reusable UI components
+│   └── ui/        # shadcn/ui components (buttons, forms, tables, etc.)
+├── pages/         # Application pages
+│   ├── leads/     # All logic related to leads management
+│   │   ├── components/  # Lead-specific components
+│   │   └── hooks/      # Lead-specific hooks
+│   └── opportunities/  # Opportunities management
+├── hooks/         # Custom hooks (queries, mutations, utilities)
+├── providers/     # App providers (QueryClient, etc.)
+├── routes/        # TanStack Router route definitions
+├── lib/           # Utility functions
+├── constants/     # App constants
+├── App.tsx
+├── types.d.ts     # Global TypeScript types
+└── main.tsx
+```
+
+## 🔍 What I Focused On
+
+- **Clean Architecture**: Modular structure with clear separation of concerns
+- **Type Safety**: Comprehensive TypeScript implementation throughout
+- **Performance**: Lazy loading, efficient data fetching, and optimized re-renders
+- **User Experience**: Responsive design, loading states, and intuitive interactions
+- **Code Quality**: ESLint configuration, consistent formatting, and reusable components
+
+## 🙋‍♂️ About Me
+
+This project demonstrates modern React development practices and full-stack application architecture.  
+If you have any questions or want to discuss it further, feel free to reach out:
+
+João Matheus Tripoli – [LinkedIn](https://www.linkedin.com/in/joao-tripoli/)
