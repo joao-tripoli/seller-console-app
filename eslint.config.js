@@ -23,7 +23,7 @@ export default tseslint.config([
       tailwindcss: tailwindcss,
     },
     rules: {
-      'tailwindcss/classnames-order': 'warn',
+      'tailwindcss/classnames-order': 'error',
     },
   },
 ]);

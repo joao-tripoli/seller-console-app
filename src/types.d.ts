@@ -5,5 +5,5 @@ declare type Lead = {
   email: string;
   source: string;
   score: number;
-  status: string;
+  status: 'active' | 'pending' | 'inactive';
 };
