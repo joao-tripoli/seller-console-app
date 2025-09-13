@@ -1,4 +1,5 @@
 import useQueryLeads from '@/hooks/queries/useQueryLeads';
+import useDebounce from '@/hooks/useDebounce';
 import useLocalStorage from '@/hooks/useLocalStorage';
 import { useCallback, useMemo, useState } from 'react';
 
@@ -26,6 +27,9 @@ const useLeads = () => {
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
 
   const { data: leads } = useQueryLeads();
+
+  // Debounce the search term with 300ms delay
+  const debouncedSearch = useDebounce(filters.search, 300);
 
   // Individual setters for each filter
   const setSort = useCallback(
@@ -65,9 +69,9 @@ const useLeads = () => {
 
     let filtered = leads;
 
-    // Filter by search term (name or company)
+    // Filter by search term (name or company) using debounced search
     filtered = leads.filter((lead) => {
-      const searchTerm = filters.search.toLowerCase();
+      const searchTerm = debouncedSearch.toLowerCase();
 
       return (
         lead.name.toLowerCase().includes(searchTerm) ||
@@ -90,7 +94,7 @@ const useLeads = () => {
       }
       return b.score - a.score;
     });
-  }, [leads, filters.sort, filters.search, filters.status]);
+  }, [leads, filters.sort, debouncedSearch, filters.status]);
 
   return {
     filteredLeads,
