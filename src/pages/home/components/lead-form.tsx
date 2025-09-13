@@ -30,6 +30,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import useMutateLead from '@/hooks/mutations/useMutateLead';
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -48,6 +49,8 @@ type Props = Pick<DrawerProps, 'open' | 'onClose'> & {
 
 const LeadForm = ({ open, onClose, lead }: Props) => {
   const [isMobile, setIsMobile] = useState(false);
+
+  const { mutate, isPending } = useMutateLead();
 
   const form = useForm<LeadUpdateFormData>({
     resolver: zodResolver(leadUpdateSchema),
@@ -80,13 +83,19 @@ const LeadForm = ({ open, onClose, lead }: Props) => {
   }, []);
 
   const handleFormSubmit = async (data: LeadUpdateFormData) => {
-    try {
-      console.log(data);
-      onClose?.();
-      form.reset();
-    } catch (error) {
-      console.error('Failed to update lead:', error);
-    }
+    if (!lead) return;
+
+    const newLead: Lead = {
+      ...lead,
+      ...data,
+    };
+
+    mutate(newLead, {
+      onSuccess: () => {
+        onClose?.();
+        form.reset();
+      },
+    });
   };
 
   const handleClose = () => {
@@ -113,6 +122,7 @@ const LeadForm = ({ open, onClose, lead }: Props) => {
             <form
               onSubmit={form.handleSubmit(handleFormSubmit)}
               className="flex flex-col gap-4 p-4"
+              id="lead-form"
             >
               <FormField
                 control={form.control}
@@ -127,6 +137,7 @@ const LeadForm = ({ open, onClose, lead }: Props) => {
                         {...field}
                       />
                     </FormControl>
+
                     <FormDescription>
                       Enter the lead's email address
                     </FormDescription>
@@ -157,6 +168,7 @@ const LeadForm = ({ open, onClose, lead }: Props) => {
                         <SelectItem value="inactive">Inactive</SelectItem>
                       </SelectContent>
                     </Select>
+
                     <FormDescription>
                       Select the current status of the lead
                     </FormDescription>
@@ -171,11 +183,11 @@ const LeadForm = ({ open, onClose, lead }: Props) => {
         <DrawerFooter className="mt-auto">
           <Button
             type="submit"
-            disabled={form.formState.isSubmitting}
+            disabled={isPending}
             className="bg-blue-400 hover:bg-blue-500"
-            onClick={form.handleSubmit(handleFormSubmit)}
+            form="lead-form"
           >
-            {form.formState.isSubmitting ? 'Updating...' : 'Update Lead'}
+            {isPending ? 'Updating...' : 'Update Lead'}
           </Button>
 
           <DrawerClose asChild>
