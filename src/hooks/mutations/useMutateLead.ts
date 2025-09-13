@@ -4,6 +4,7 @@ import {
   useQueryClient,
   type UseMutationOptions,
 } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 type Params = UseMutationOptions<Lead, Error, Lead>;
 
@@ -19,10 +20,15 @@ const useMutateLead = (params?: Params) => {
     ...params,
     onSuccess: (data, variables, context) => {
       params?.onSuccess?.(data, variables, context);
+      toast.success('Lead updated successfully');
 
       queryClient.setQueryData([queryKeys.Leads], (old: Lead[] = []) =>
         old.map((lead) => (lead.id === data.id ? data : lead))
       );
+    },
+    onError: (error, variables, context) => {
+      params?.onError?.(error, variables, context);
+      toast.error('Failed to update lead');
     },
   });
 };

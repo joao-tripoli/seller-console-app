@@ -15,7 +15,7 @@ import LeadForm from './components/lead-form';
 import LeadsList from './components/leads-list';
 import useLeads from './hooks/useLeads';
 
-const home = () => {
+const Leads = () => {
   const {
     filteredLeads,
     clearAllFilters,
@@ -109,4 +109,4 @@ const home = () => {
   );
 };
 
-export default home;
+export default Leads;
