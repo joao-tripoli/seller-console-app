@@ -1,3 +1,4 @@
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import ScoreBadge from '@/components/ui/score-badge';
 
@@ -28,9 +29,7 @@ const LeadCard = ({ lead, onLeadClick }: Props) => {
         <span className="text-xs text-gray-400 group-hover:text-gray-600 transition-colors">
           {lead.source}
         </span>
-        <span className="text-xs text-gray-400 group-hover:text-gray-600 transition-colors">
-          {lead.status}
-        </span>
+        <Badge variant={lead.status}>{lead.status}</Badge>
       </div>
 
       <Button
