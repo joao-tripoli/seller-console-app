@@ -1,3 +1,7 @@
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+
 import { Button } from '@/components/ui/button';
 import {
   Drawer,
@@ -9,6 +13,15 @@ import {
   DrawerTitle,
   type DrawerProps,
 } from '@/components/ui/drawer';
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -19,12 +32,9 @@ import {
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 
 const leadUpdateSchema = z.object({
-  email: z.string().email('Please enter a valid email address'),
+  email: z.email('Please enter a valid email address'),
   status: z.enum(['active', 'pending', 'inactive'], {
     error: 'Please select a status',
   }),
@@ -39,14 +49,7 @@ type Props = Pick<DrawerProps, 'open' | 'onClose'> & {
 const LeadForm = ({ open, onClose, lead }: Props) => {
   const [isMobile, setIsMobile] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-    reset,
-    setValue,
-    watch,
-  } = useForm<LeadUpdateFormData>({
+  const form = useForm<LeadUpdateFormData>({
     resolver: zodResolver(leadUpdateSchema),
     defaultValues: {
       email: lead?.email || '',
@@ -57,12 +60,12 @@ const LeadForm = ({ open, onClose, lead }: Props) => {
   // Reset form when lead changes
   useEffect(() => {
     if (lead) {
-      reset({
+      form.reset({
         email: lead.email,
         status: lead.status as 'active' | 'pending' | 'inactive',
       });
     }
-  }, [lead, reset]);
+  }, [lead, form]);
 
   // Check screen size on mount and resize
   useEffect(() => {
@@ -80,7 +83,7 @@ const LeadForm = ({ open, onClose, lead }: Props) => {
     try {
       console.log(data);
       onClose?.();
-      reset();
+      form.reset();
     } catch (error) {
       console.error('Failed to update lead:', error);
     }
@@ -88,7 +91,7 @@ const LeadForm = ({ open, onClose, lead }: Props) => {
 
   const handleClose = () => {
     onClose?.();
-    reset();
+    form.reset();
   };
 
   return (
@@ -106,67 +109,73 @@ const LeadForm = ({ open, onClose, lead }: Props) => {
         </DrawerHeader>
 
         <div className="flex-1 overflow-y-auto">
-          <form
-            onSubmit={handleSubmit(handleFormSubmit)}
-            className="flex flex-col gap-4 p-4"
-          >
-            <div className="space-y-2">
-              <label htmlFor="email" className="text-sm font-medium">
-                Email
-              </label>
-
-              <Input
-                id="email"
-                type="email"
-                placeholder="Enter email address"
-                {...register('email')}
-                className={errors.email ? 'border-red-500' : ''}
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(handleFormSubmit)}
+              className="flex flex-col gap-4 p-4"
+            >
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="email"
+                        placeholder="Enter email address"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Enter the lead's email address
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-              {errors.email && (
-                <p className="text-sm text-red-500">{errors.email.message}</p>
-              )}
-            </div>
 
-            <div className="space-y-2">
-              <label htmlFor="status" className="text-sm font-medium">
-                Status
-              </label>
+              <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Status</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select status" />
+                        </SelectTrigger>
+                      </FormControl>
 
-              <Select
-                value={watch('status')}
-                onValueChange={(value) =>
-                  setValue('status', value as 'active' | 'pending' | 'inactive')
-                }
-              >
-                <SelectTrigger
-                  className={cn(
-                    errors.status ? 'border-red-500' : '',
-                    'w-full min-w-full'
-                  )}
-                >
-                  <SelectValue placeholder="Select status" />
-                </SelectTrigger>
-
-                <SelectContent>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="pending">Pending</SelectItem>
-                  <SelectItem value="inactive">Inactive</SelectItem>
-                </SelectContent>
-              </Select>
-              {errors.status && (
-                <p className="text-sm text-red-500">{errors.status.message}</p>
-              )}
-            </div>
-          </form>
+                      <SelectContent>
+                        <SelectItem value="active">Active</SelectItem>
+                        <SelectItem value="pending">Pending</SelectItem>
+                        <SelectItem value="inactive">Inactive</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormDescription>
+                      Select the current status of the lead
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </form>
+          </Form>
         </div>
 
         <DrawerFooter className="mt-auto">
           <Button
             type="submit"
-            disabled={isSubmitting}
+            disabled={form.formState.isSubmitting}
             className="bg-blue-400 hover:bg-blue-500"
+            onClick={form.handleSubmit(handleFormSubmit)}
           >
-            {isSubmitting ? 'Updating...' : 'Update Lead'}
+            {form.formState.isSubmitting ? 'Updating...' : 'Update Lead'}
           </Button>
 
           <DrawerClose asChild>
