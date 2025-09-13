@@ -1,6 +1,7 @@
 import useQueryLeads from '@/hooks/queries/useQueryLeads';
 import useDebounce from '@/hooks/useDebounce';
 import useLocalStorage from '@/hooks/useLocalStorage';
+import useScreenSize from '@/hooks/useScreenSize';
 import { useCallback, useMemo, useState } from 'react';
 
 // Define the filter state type
@@ -12,6 +13,7 @@ type FilterState = {
 
 // localStorage key for filters
 const FILTERS_STORAGE_KEY = 'leads-filters';
+const VIEW_STORAGE_KEY = 'leads-view';
 
 const useLeads = () => {
   // Use localStorage for filter persistence
@@ -24,10 +26,17 @@ const useLeads = () => {
     }
   );
 
+  // Use localStorage for view preference persistence
+  const [view, setView] = useLocalStorage<'list' | 'table'>(
+    VIEW_STORAGE_KEY,
+    'list'
+  );
+
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [leadToConvert, setLeadToConvert] = useState<Lead | null>(null);
 
-  const { data: leads } = useQueryLeads();
+  const { data: leads, isLoading } = useQueryLeads();
+  const isMobile = useScreenSize();
 
   // Debounce the search term with 300ms delay
   const debouncedSearch = useDebounce(filters.search, 300);
@@ -105,6 +114,9 @@ const useLeads = () => {
     setLeadToConvert(null);
   }, []);
 
+  // Determine which view to show
+  const currentView = isMobile ? 'list' : view;
+
   return {
     filteredLeads,
     clearAllFilters,
@@ -120,6 +132,10 @@ const useLeads = () => {
     leadToConvert,
     handleConvertLead,
     handleCloseConvertForm,
+    isMobile,
+    view: currentView,
+    setView,
+    isLoading,
   };
 };
 

@@ -23,10 +23,11 @@ type Props<TData, TValue> = {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   isLoading?: boolean;
+  onRowClick?: (row: TData) => void;
 };
 
 const DataTable = <TData, TValue>(props: Props<TData, TValue>) => {
-  const { columns, data, isLoading = false } = props;
+  const { columns, data, isLoading = false, onRowClick } = props;
 
   const [sorting, setSorting] = useState<SortingState>([]);
 
@@ -81,6 +82,10 @@ const DataTable = <TData, TValue>(props: Props<TData, TValue>) => {
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && 'selected'}
+                  className={
+                    onRowClick ? 'cursor-pointer hover:bg-muted/50' : ''
+                  }
+                  onClick={() => onRowClick?.(row.original)}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
