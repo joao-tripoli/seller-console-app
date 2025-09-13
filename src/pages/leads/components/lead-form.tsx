@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -31,8 +32,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import useMutateLead from '@/hooks/mutations/useMutateLead';
+import useScreenSize from '@/hooks/useScreenSize';
 import { cn } from '@/lib/utils';
-import { zodResolver } from '@hookform/resolvers/zod';
 
 const leadUpdateSchema = z.object({
   email: z.email('Please enter a valid email address'),
@@ -48,7 +49,7 @@ type Props = Pick<DrawerProps, 'open' | 'onClose'> & {
 };
 
 const LeadForm = ({ open, onClose, lead }: Props) => {
-  const [isMobile, setIsMobile] = useState(false);
+  const isMobile = useScreenSize();
 
   const { mutate, isPending } = useMutateLead();
 
@@ -70,33 +71,24 @@ const LeadForm = ({ open, onClose, lead }: Props) => {
     }
   }, [lead, form]);
 
-  // Check screen size on mount and resize
-  useEffect(() => {
-    const checkScreenSize = () => {
-      setIsMobile(window.innerWidth < 768); // md breakpoint
-    };
+  const handleFormSubmit = useCallback(
+    async (data: LeadUpdateFormData) => {
+      if (!lead) return;
 
-    checkScreenSize();
-    window.addEventListener('resize', checkScreenSize);
+      const newLead: Lead = {
+        ...lead,
+        ...data,
+      };
 
-    return () => window.removeEventListener('resize', checkScreenSize);
-  }, []);
-
-  const handleFormSubmit = async (data: LeadUpdateFormData) => {
-    if (!lead) return;
-
-    const newLead: Lead = {
-      ...lead,
-      ...data,
-    };
-
-    mutate(newLead, {
-      onSuccess: () => {
-        onClose?.();
-        form.reset();
-      },
-    });
-  };
+      mutate(newLead, {
+        onSuccess: () => {
+          onClose?.();
+          form.reset();
+        },
+      });
+    },
+    [lead, mutate, onClose, form]
+  );
 
   const handleClose = () => {
     onClose?.();
