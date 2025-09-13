@@ -30,6 +30,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import useAddOpportunity from '@/hooks/mutations/useAddOpportunity';
 import useScreenSize from '@/hooks/useScreenSize';
 import { cn } from '@/lib/utils';
 
@@ -48,6 +49,7 @@ type Props = Pick<DrawerProps, 'open' | 'onClose'> & {
 
 const ConvertLeadForm = ({ open, onClose, lead }: Props) => {
   const isMobile = useScreenSize();
+  const { mutate } = useAddOpportunity();
 
   const form = useForm<OpportunityFormData>({
     resolver: zodResolver(opportunitySchema),
@@ -85,12 +87,12 @@ const ConvertLeadForm = ({ open, onClose, lead }: Props) => {
         accountName: data.accountName,
       };
 
-      // Console.log the opportunity data as requested
-      console.log('New Opportunity:', opportunity);
-
-      // Close the form and reset
-      onClose?.();
-      form.reset();
+      mutate(opportunity, {
+        onSuccess: () => {
+          onClose?.();
+          form.reset();
+        },
+      });
     },
     [lead, onClose, form]
   );
